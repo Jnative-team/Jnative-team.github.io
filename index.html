@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JNative — Java to Native, Without the JVM</title>
+    <meta name="description" content="JNative compiles JAR and CLASS files into native executables with static lifetime management — no JVM, no GC pauses, no interpreter.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-brand">JNative</a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#usage">Usage</a>
+                <a href="#platforms">Platforms</a>
+                <a href="#memory">Memory</a>
+            </div>
+            <a href="https://github.com/kubyk01/jnative" class="nav-github" target="_blank" rel="noopener">GitHub</a>
+        </div>
+    </nav>
+
+    <!-- ================= HERO ================= -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <img src="images/bird.png" alt="JNative bird mascot" class="hero-bird">
+                <h1>Java to native,<br>without the JVM and GC.</h1>
+                <p class="hero-desc">
+                    Compile JAR and CLASS files into standalone executables. Escape and lifetime analysis decide exactly when every object can be freed — like Rust, on top of Java, Kotlin, Scala, or Groovy.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#usage" class="btn btn-primary">Get Started</a>
+                    <a href="https://github.com/kubyk01/jnative" class="btn btn-outline" target="_blank" rel="noopener">View on GitHub</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= PIPELINE ================= -->
+    <section class="pipeline">
+        <div class="pipeline-container">
+            <div class="pipeline-flow">
+                <span class="pipe-step">.class / .jar</span>
+                <span class="pipe-arrow">→</span>
+                <span class="pipe-text">bytecode analysis</span>
+                <span class="pipe-arrow">→</span>
+                <span class="pipe-text">lifetime analysis</span>
+                <span class="pipe-arrow">→</span>
+                <span class="pipe-text">destructor insertion</span>
+                <span class="pipe-arrow">→</span>
+                <span class="pipe-text">LLVM IR</span>
+                <span class="pipe-arrow">→</span>
+                <span class="pipe-step">native executable</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= FEATURES ================= -->
+    <section id="features" class="features">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Why JNative</h2>
+                <p>Built for developers who want compiled-language performance without leaving the JVM ecosystem.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>No JVM, No Warm-up</h3>
+                    <p>Bytecode is translated to SSA IR, analyzed, and lowered to LLVM. The executable starts instantly — no interpreter, no JIT, no class-loading overhead.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧹</div>
+                    <h3>Static Lifetime Management</h3>
+                    <p>Interprocedural points-to and escape analysis classify every allocation site. Destructors are inserted at last use — deterministic cleanup without a garbage collector.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Memory Safety</h3>
+                    <p>Heap-escaped values are paired with null-outs so overwrite instrumentation cannot double-free. Shutdown cleanup uses a claim stack to break cycles safely.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <h3>Broad Input Support</h3>
+                    <p>Plain JARs, directories, single CLASS files, and Spring Boot fat JARs — with lazy nested-JAR indexing and on-demand class loading.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Cross-Platform</h3>
+                    <p>Target triples for x86-64, AArch64, RISC-V, POWER, s390x, ARMv7, and i686. Override with <code>--target</code> and <code>--data-layout</code>.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3>GraalVM-Compatible Metadata</h3>
+                    <p>Reads <code>reflect-config.json</code>, <code>proxy-config.json</code>, <code>jni-config.json</code>, and <code>resource-config.json</code> under <code>META-INF/native-image/</code>.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= USAGE ================= -->
+    <section id="usage" class="usage">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Quick Start</h2>
+                <p>Build a native executable from a JAR in one command.</p>
+            </div>
+            <div class="code-window">
+                <div class="code-titlebar">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                    <span class="code-title">terminal</span>
+                </div>
+                <pre class="code-body"><code><span class="c-comment"># Inspect a JAR</span>
+<span class="c-cmd">java -jar jnative.jar</span> inspect app.jar
+
+<span class="c-comment"># Build a native executable (entry inferred from Main-Class)</span>
+<span class="c-cmd">java -jar jnative.jar</span> analyze app.jar
+
+<span class="c-comment"># Choose entry, output, and dump analysis results</span>
+<span class="c-cmd">java -jar jnative.jar</span> analyze app.jar \
+  <span class="c-flag">--entry</span> com.example.Main \
+  <span class="c-flag">--output</span> myapp \
+  <span class="c-flag">--alias</span> --escape --lifetime --destructor
+
+<span class="c-comment"># Cross-compile for Windows</span>
+<span class="c-cmd">java -jar jnative.jar</span> analyze app.jar \
+  <span class="c-flag">--target</span> x86_64-pc-windows-msvc \
+  <span class="c-flag">-O3</span>
+
+<span class="c-comment"># Generate LLVM IR without compiling</span>
+<span class="c-cmd">java -jar jnative.jar</span> analyze app.jar \
+  <span class="c-flag">--entry</span> com.example.Main \
+  <span class="c-flag">--no-compile</span></code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= PLATFORMS ================= -->
+    <section id="platforms" class="platforms">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Supported Targets</h2>
+                <p>Auto-detected from <code>os.name</code> / <code>os.arch</code>, or explicit via <code>--target</code>.</p>
+            </div>
+            <div class="table-wrap">
+                <table class="platform-table">
+                    <thead>
+                        <tr>
+                            <th>Family</th>
+                            <th>Example Triples</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>x86-64</td>
+                            <td><code>x86_64-pc-linux-gnu</code> <code>x86_64-pc-windows-msvc</code> <code>x86_64-apple-darwin</code></td>
+                        </tr>
+                        <tr>
+                            <td>AArch64 / arm64</td>
+                            <td><code>aarch64-unknown-linux-gnu</code> <code>arm64-apple-darwin</code> <code>aarch64-pc-windows-msvc</code></td>
+                        </tr>
+                        <tr>
+                            <td>i686</td>
+                            <td><code>i686-pc-linux-gnu</code> <code>i686-pc-windows-msvc</code></td>
+                        </tr>
+                        <tr>
+                            <td>RISC-V</td>
+                            <td><code>riscv64-unknown-linux-gnu</code></td>
+                        </tr>
+                        <tr>
+                            <td>POWER</td>
+                            <td><code>powerpc64le-unknown-linux-gnu</code> <code>powerpc64-unknown-linux-gnu</code></td>
+                        </tr>
+                        <tr>
+                            <td>s390x</td>
+                            <td><code>s390x-ibm-linux-gnu</code></td>
+                        </tr>
+                        <tr>
+                            <td>ARMv7</td>
+                            <td><code>armv7-unknown-linux-gnueabihf</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= MEMORY MODEL ================= -->
+    <section id="memory" class="memory">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Memory Model</h2>
+                <p>Every allocation site is classified at compile time. The runtime acts on that classification.</p>
+            </div>
+            <div class="memory-grid">
+                <div class="memory-item">
+                    <strong>STACK</strong>
+                    <p>Does not escape its defining function. Eligible for stack allocation or full scalar replacement.</p>
+                </div>
+                <div class="memory-item">
+                    <strong>HEAP</strong>
+                    <p>Stored in another object’s field. A destructor is inserted at last use, and the containing field is nulled.</p>
+                </div>
+                <div class="memory-item">
+                    <strong>RETURN</strong>
+                    <p>Returned to the caller; the caller owns it. No cleanup inside the defining function.</p>
+                </div>
+                <div class="memory-item">
+                    <strong>GLOBAL</strong>
+                    <p>Reachable from a static field. Released during the cycle-safe shutdown pass.</p>
+                </div>
+                <div class="memory-item">
+                    <strong>THREAD</strong>
+                    <p>Handed to another thread. Not released per-use; lifetime is managed by the receiving thread.</p>
+                </div>
+                <div class="memory-item">
+                    <strong>UNKNOWN</strong>
+                    <p>The analysis cannot classify the site. Cleanup is handled conservatively.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-title">JNative</p>
+            <p class="footer-desc">Ahead-of-Time Compiler from JVM Bytecode to Native Executable</p>
+            <p class="footer-note">Experimental software. Use with caution in production.</p>
+            <div class="footer-links">
+                <a href="https://github.com/kubyk01/jnative" target="_blank" rel="noopener">GitHub</a>
+                <a href="#">Documentation</a>
+                <a href="#">Apache 2.0 License</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
